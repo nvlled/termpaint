@@ -29,7 +29,7 @@ func (mode *normalMode) Handle(tpaint *termPaint, events chan term.Event) {
 	dArea := tpaint.dArea
 	cursor := dArea.cursor
 
-	mode.updateStatus(tpaint.sb)
+	mode.updateStatus(tpaint.modeSb)
 	redraw()
 
 	e := <-events
@@ -67,18 +67,18 @@ func (mode *normalMode) Handle(tpaint *termPaint, events chan term.Event) {
 		// select brush
 		case 's':
 			pallete := tpaint.bp
-			//name := tpaint.sb.Input("enter name", events)
-			//tpaint.sb.SetText("You name is dumb " + name)
-
+			tpaint.secondSb.SetText("select brush then <enter>")
 			_, ch := pallete.ChooseBrush(events)
+			tpaint.secondSb.SetText("")
 			mode.brush.Ch = ch
-			mode.updateStatus(tpaint.sb)
+			mode.updateStatus(tpaint.modeSb)
 		case 'c':
 			pallete := tpaint.cp
-			tpaint.sb.SetText("select color then <enter>")
+			tpaint.secondSb.SetText("select color then <enter>")
 			_, color := pallete.ChooseBrush(events)
+			tpaint.secondSb.SetText("")
 			mode.brush.Fg = term.Attribute(color)
-			mode.updateStatus(tpaint.sb)
+			mode.updateStatus(tpaint.modeSb)
 		}
 	}
 	redraw()

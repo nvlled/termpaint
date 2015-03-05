@@ -22,9 +22,9 @@ func (sb *statusBar) Render(canvas wind.Canvas) {
 	lastx := 0
 	for x, cell := range sb.contents {
 		canvas.Draw(x, 0, cell.Ch, uint16(cell.Fg), uint16(cell.Bg))
-		lastx = x
+		lastx++
 	}
-	for x := lastx + 1; x < canvas.Width(); x++ {
+	for x := lastx; x < canvas.Width(); x++ {
 		canvas.Draw(x, 0, ' ', 0, 0)
 	}
 	if sb.cursor >= 0 {

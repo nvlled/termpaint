@@ -25,18 +25,19 @@ var modified = true
 func redraw() { modified = true }
 
 type termPaint struct {
-	bp    *brushPallete
-	cp    *colorPallete
-	dArea *drawingArea
-	sb    *statusBar
+	bp       *brushPallete
+	cp       *colorPallete
+	dArea    *drawingArea
+	modeSb   *statusBar
+	secondSb *statusBar
 }
 
 func createPaintLayer(tpaint *termPaint) wind.Layer {
 	hr := wind.Line('―')
 	return wind.Vlayer(
-		wind.Hlayer(tpaint.bp, wind.Text("| "), tpaint.sb),
+		wind.Hlayer(tpaint.bp, wind.Text("| "), tpaint.modeSb),
 		//hr,
-		wind.Hlayer(tpaint.cp, wind.Text("| ")),
+		wind.Hlayer(tpaint.cp, wind.Text("| "), tpaint.secondSb),
 		hr,
 		tpaint.dArea,
 		//wind.Zlayer(tpaint.dArea),
@@ -67,10 +68,15 @@ func main() {
 	}
 	dArea.Flush()
 
-	sb := NewStatusBar()
-	tpaint := &termPaint{brushPallete, colorPallete, dArea, sb}
-	paintLayer := createPaintLayer(tpaint)
+	tpaint := &termPaint{
+		bp:       brushPallete,
+		cp:       colorPallete,
+		dArea:    dArea,
+		modeSb:   NewStatusBar(),
+		secondSb: NewStatusBar(),
+	}
 
+	paintLayer := createPaintLayer(tpaint)
 	canvas := wind.NewTermCanvas()
 	events := make(chan term.Event, 1)
 
