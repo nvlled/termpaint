@@ -8,6 +8,12 @@ import (
 	"os"
 )
 
+type invalidFileError string
+
+func (err invalidFileError) Error() string {
+	return string(err) + ": invalid file format"
+}
+
 type drawingArea struct {
 	Buffer  [][]term.Cell
 	cursor  *pos
@@ -104,7 +110,7 @@ func loadDrawingArea(filename string) (*drawingArea, error) {
 	err = dec.Decode(&dArea)
 
 	if err != nil {
-		return nil, err
+		return nil, invalidFileError(filename)
 	}
 	dArea.cursor = newpos(0, 0)
 	return &dArea, nil

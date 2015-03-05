@@ -38,14 +38,17 @@ func (mode *normalMode) Handle(tpaint *termPaint, events chan term.Event) {
 		case term.KeyCtrlS:
 			filename := tpaint.filename
 			if filename == "" {
-				filename = tpaint.secondSb.Input("saving session, enter filename", events)
+				filename = tpaint.secondSb.Input(events, "saving session, enter filename")
+			} else {
+				filename = tpaint.secondSb.Input(events, "saving session", filename)
 			}
 
 			if filename == "" {
 				tpaint.secondSb.SetText("no filename given, aborting...")
 			} else {
 				saveDrawingArea(filename, dArea)
-				tpaint.secondSb.SetText("session saved on " + filename)
+				tpaint.secondSb.SetText("file saved: " + filename)
+				tpaint.filename = filename
 			}
 
 		case term.KeyCtrlC:

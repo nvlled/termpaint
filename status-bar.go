@@ -40,12 +40,20 @@ func (sb *statusBar) SetText(text string) {
 	sb.contents = contents
 }
 
-func (sb *statusBar) Input(prompt string, events chan term.Event) string {
+func (sb *statusBar) Input(events chan term.Event, prompt string, initInput ...string) string {
 	sb.savedContents = sb.contents
 	prompt += ": "
 	sb.SetText(prompt)
 	sb.cursor = len(prompt)
 	start := sb.cursor
+
+	if len(initInput) > 0 {
+		input := initInput[0]
+		for _, ch := range input {
+			sb.contents = append(sb.contents, term.Cell{ch, 0, 0})
+		}
+		sb.cursor += len(input)
+	}
 
 	redraw()
 	//TODO: redraw(sb)

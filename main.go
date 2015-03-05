@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	term "github.com/nsf/termbox-go"
 	"github.com/nvlled/wind"
 	"os"
@@ -64,13 +65,23 @@ func main() {
 	)
 
 	var dArea *drawingArea
-	dArea, err := loadDrawingArea("dArea")
-	if err != nil {
+	var filename string
+	if len(os.Args) > 1 {
+		var err error
+		filename = os.Args[1]
+		dArea, err = loadDrawingArea(filename)
+		if err != nil {
+			term.Close()
+			fmt.Printf("file not loaded, %v\n", err)
+			os.Exit(1)
+		}
+		dArea.Flush()
+	} else {
 		dArea = NewDrawingArea(termw, termh)
 	}
-	dArea.Flush()
 
 	tpaint := &termPaint{
+		filename: filename,
 		bp:       brushPallete,
 		cp:       colorPallete,
 		dArea:    dArea,
