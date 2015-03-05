@@ -17,6 +17,7 @@ import (
 //  - customizable keybindings
 //  - handle terminal resize
 //  - drawing area size must be different from terminal size
+//  - insert string mode
 
 var modified = true
 
@@ -25,6 +26,7 @@ var modified = true
 func redraw() { modified = true }
 
 type termPaint struct {
+	filename string
 	bp       *brushPallete
 	cp       *colorPallete
 	dArea    *drawingArea

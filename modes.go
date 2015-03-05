@@ -35,9 +35,23 @@ func (mode *normalMode) Handle(tpaint *termPaint, events chan term.Event) {
 	e := <-events
 	if e.Key != 0 {
 		switch e.Key {
+		case term.KeyCtrlS:
+			filename := tpaint.filename
+			if filename == "" {
+				filename = tpaint.secondSb.Input("saving session, enter filename", events)
+			}
+
+			if filename == "" {
+				tpaint.secondSb.SetText("no filename given, aborting...")
+			} else {
+				saveDrawingArea(filename, dArea)
+				tpaint.secondSb.SetText("session saved on " + filename)
+			}
+
 		case term.KeyCtrlC:
-			saveDrawingArea("dArea", dArea)
-			//notify on status bar
+			if tpaint.filename != "" {
+				saveDrawingArea(tpaint.filename, dArea)
+			}
 
 		case term.KeyArrowLeft:
 			mode.moveCursor(tpaint, -1, 0)
