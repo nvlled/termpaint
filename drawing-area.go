@@ -42,7 +42,7 @@ func (dArea *drawingArea) Height() size.T {
 
 func (dArea *drawingArea) Render(canvas wind.Canvas) {
 	// possibly need synchronization from other threads
-	dArea.baseX, dArea.baseY = canvas.Abs(0, 0)
+	dArea.baseX, dArea.baseY = canvas.Base()
 	dArea.actualW, dArea.actualH = canvas.Dimension()
 	// I could avoid the need to refer to canvas' properties by
 	//  * avoiding the use of termbox.SetCursor
@@ -52,8 +52,8 @@ func (dArea *drawingArea) Render(canvas wind.Canvas) {
 
 	curs := dArea.cursor
 	if curs.x >= 0 && curs.y >= 0 {
-		x, y := canvas.Abs(curs.x, curs.y)
-		term.SetCursor(x, y)
+		bx, by := canvas.Base()
+		term.SetCursor(curs.x+bx, curs.y+by)
 	}
 	if dArea.flush {
 		for y, row := range dArea.Buffer {
