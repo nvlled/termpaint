@@ -42,8 +42,6 @@ func (cp *colorPallete) Color(index int) uint16 {
 	return ' '
 }
 
-func (_ *colorPallete) Elements() []wind.Layer { return nil }
-
 func (cp *colorPallete) Render(canvas wind.Canvas) {
 	for x, color := range cp.colors {
 		canvas.Draw(x*2, 0, SLOT, color, uint16(term.ColorDefault))

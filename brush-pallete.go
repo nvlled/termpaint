@@ -35,8 +35,6 @@ func (bp *brushPallete) Brush(index int) rune {
 	return ' '
 }
 
-func (_ *brushPallete) Elements() []wind.Layer { return nil }
-
 func (bp *brushPallete) Render(canvas wind.Canvas) {
 	for x, brush := range bp.brushes {
 		canvas.Draw(x*2, 0, brush, 0, 0)

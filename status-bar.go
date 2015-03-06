@@ -14,9 +14,8 @@ type statusBar struct {
 
 func NewStatusBar() *statusBar { return &statusBar{cursor: -1} }
 
-func (sb *statusBar) Width() size.T          { return size.Free }
-func (sb *statusBar) Height() size.T         { return size.Const(1) }
-func (sb *statusBar) Elements() []wind.Layer { return nil }
+func (sb *statusBar) Width() size.T  { return size.Free }
+func (sb *statusBar) Height() size.T { return size.Const(1) }
 
 func (sb *statusBar) Render(canvas wind.Canvas) {
 	lastx := 0

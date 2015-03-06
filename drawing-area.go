@@ -40,8 +40,6 @@ func (dArea *drawingArea) Height() size.T {
 	return size.Const(len(dArea.Buffer))
 }
 
-func (dArea *drawingArea) Elements() []wind.Layer { return nil }
-
 func (dArea *drawingArea) Render(canvas wind.Canvas) {
 	// possibly need synchronization from other threads
 	dArea.baseX, dArea.baseY = canvas.Abs(0, 0)
