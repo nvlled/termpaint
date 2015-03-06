@@ -57,12 +57,16 @@ func (sb *statusBar) Input(events chan term.Event, prompt string, initInput ...s
 
 	redraw()
 	//TODO: redraw(sb)
+
+	input := ""
 	for e := range events {
 		if e.Key == 0 {
 			sb.contents = append(sb.contents, term.Cell{e.Ch, 0, 0})
 			sb.cursor++
 		} else {
 			switch e.Key {
+			case term.KeyEsc: // cancel
+				goto cancel
 			case term.KeyEnter: // done
 				goto done
 
@@ -78,10 +82,10 @@ func (sb *statusBar) Input(events chan term.Event, prompt string, initInput ...s
 		redraw()
 	}
 done:
-	input := ""
 	for i := start; i < len(sb.contents); i++ {
 		input += string(sb.contents[i].Ch)
 	}
+cancel:
 
 	sb.contents = sb.savedContents
 	sb.cursor = -1
