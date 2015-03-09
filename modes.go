@@ -35,6 +35,18 @@ func (mode *normalMode) Handle(tpaint *termPaint, events chan term.Event) {
 	e := <-events
 	if e.Key != 0 {
 		switch e.Key {
+		case term.KeyCtrlF:
+			setPopupLayer(tpaint.sessionBrowser)
+			tpaint.sessionBrowser.Select(events)
+			dArea.Flush()
+			hidePopupLayer()
+
+		case term.KeyCtrlE:
+			setPopupLayer(tpaint.editor)
+			tpaint.editor.Edit(events)
+			dArea.Flush()
+			hidePopupLayer()
+
 		case term.KeyCtrlS:
 			filename := tpaint.filename
 			if filename == "" {

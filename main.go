@@ -26,13 +26,27 @@ var modified = true
 //func switchMode(m Mode) { mode = m }
 func redraw() { modified = true }
 
+var popupLayer wind.Layer
+
+func setPopupLayer(layer wind.Layer) {
+	popupLayer = layer
+	redraw()
+}
+
+func hidePopupLayer() {
+	popupLayer = nil
+	redraw()
+}
+
 type termPaint struct {
-	filename string
-	bp       *brushPallete
-	cp       *colorPallete
-	dArea    *drawingArea
-	modeSb   *statusBar
-	secondSb *statusBar
+	filename       string
+	bp             *brushPallete
+	cp             *colorPallete
+	dArea          *drawingArea
+	modeSb         *statusBar
+	secondSb       *statusBar
+	sessionBrowser *selector
+	editor         *brushPalleteEditor
 }
 
 func createPaintLayer(tpaint *termPaint) wind.Layer {
@@ -42,8 +56,16 @@ func createPaintLayer(tpaint *termPaint) wind.Layer {
 		//hr,
 		wind.Hlayer(tpaint.cp, wind.Text("| "), tpaint.secondSb),
 		hr,
-		tpaint.dArea,
-		//wind.Zlayer(tpaint.dArea),
+		wind.Zlayer(
+			tpaint.dArea,
+			wind.RenderLayer(
+				func(canvas wind.Canvas) {
+					if popupLayer != nil {
+						popupLayer.Render(canvas)
+					}
+				},
+			),
+		),
 	)
 }
 
@@ -81,12 +103,18 @@ func main() {
 	}
 
 	tpaint := &termPaint{
-		filename: filename,
-		bp:       brushPallete,
-		cp:       colorPallete,
-		dArea:    dArea,
-		modeSb:   NewStatusBar(),
-		secondSb: NewStatusBar(),
+		filename:       filename,
+		bp:             brushPallete,
+		cp:             colorPallete,
+		dArea:          dArea,
+		modeSb:         NewStatusBar(),
+		secondSb:       NewStatusBar(),
+		sessionBrowser: NewSelector("Recent sessions", "/home/test/sample", "/tmp/testing", "/var/aaaa", "/home/user/file1"),
+		editor: NewBrushPalleteEditor([][]rune{
+			{'¶', '»', 'º', '±', 'ß', '÷', 'Ħ'},
+			{'ł', 'Œ', 'Ŧ', 'Ʒ', 'ǥ', 'Γ', 'Σ'},
+			{'.', 'Ж', 'љ', 'ק', 'گ', '‰', '※'},
+		}),
 	}
 
 	paintLayer := createPaintLayer(tpaint)
