@@ -28,8 +28,10 @@ func redraw() { modified = true }
 
 var popupLayer wind.Layer
 
+func getPopupLayer() wind.Layer { return popupLayer }
+
 func setPopupLayer(layer wind.Layer) {
-	popupLayer = layer
+	popupLayer = wind.Border('-', '|', layer)
 	redraw()
 }
 
@@ -58,13 +60,15 @@ func createPaintLayer(tpaint *termPaint) wind.Layer {
 		hr,
 		wind.Zlayer(
 			tpaint.dArea,
-			wind.RenderLayer(
+			// RenderLayer returns Free size, not the popupLayer size
+			wind.SyncSize(wind.Defer(getPopupLayer), wind.RenderLayer(
 				func(canvas wind.Canvas) {
 					if popupLayer != nil {
+						canvas.Clear()
 						popupLayer.Render(canvas)
 					}
 				},
-			),
+			)),
 		),
 	)
 }
