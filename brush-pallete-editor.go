@@ -66,12 +66,16 @@ func (bp *brushPalleteEditor) Render(canvas wind.Canvas) {
 	bp.vlayer.Render(canvas)
 }
 
-func (bp *brushPalleteEditor) Edit(events chan term.Event) {
+func (bp *brushPalleteEditor) Edit(events chan term.Event) *brushPallete {
+	var pallete *brushPallete
 	for e := range events {
 		switch e.Key {
 		case term.KeyEsc:
-			return
+			goto end
 		case term.KeyEnter:
+			pallete = bp.PalleteAtCursor()
+			goto end
+		case term.KeyCtrlE:
 			pallete := bp.PalleteAtCursor()
 			if pallete != nil {
 				curs := bp.cursor
@@ -119,4 +123,6 @@ func (bp *brushPalleteEditor) Edit(events chan term.Event) {
 		}
 		redraw()
 	}
+end:
+	return pallete
 }

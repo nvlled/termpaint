@@ -43,7 +43,11 @@ func (mode *normalMode) Handle(tpaint *termPaint, events chan term.Event) {
 
 		case term.KeyCtrlE:
 			setPopupLayer(tpaint.editor)
-			tpaint.editor.Edit(events)
+			pallete := tpaint.editor.Edit(events)
+			if pallete != nil {
+				tpaint.bp = pallete
+			}
+
 			dArea.Flush()
 			hidePopupLayer()
 

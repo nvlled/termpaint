@@ -54,7 +54,11 @@ type termPaint struct {
 func createPaintLayer(tpaint *termPaint) wind.Layer {
 	hr := wind.Line('―')
 	return wind.Vlayer(
-		wind.Hlayer(tpaint.bp, wind.Text("| "), tpaint.modeSb),
+		wind.Hlayer(
+			wind.Defer(func() wind.Layer { return tpaint.bp }),
+			wind.Text("| "),
+			tpaint.modeSb,
+		),
 		//hr,
 		wind.Hlayer(tpaint.cp, wind.Text("| "), tpaint.secondSb),
 		hr,
@@ -77,7 +81,13 @@ func main() {
 	term.Init()
 	termw, termh := term.Size()
 
-	brushPallete := NewBrushPallete(' ', 'け', '▪', '*', '~', '·', '▲', '★', '〄', '˚', 'Ξ', 'ϡ', 'њ', 'ر')
+	brushPalletes := [][]rune{
+		{'¶', '»', 'º', '±', 'ß', '÷', 'Ħ'},
+		{'ł', 'Œ', 'Ŧ', 'Ʒ', 'ǥ', 'Γ', 'Σ'},
+		{'.', 'Ж', 'љ', 'ק', 'گ', '‰', '※'},
+	}
+
+	brushPallete := NewBrushPallete(brushPalletes[0]...)
 	colorPallete := NewColorPallete(
 		uint16(term.ColorDefault),
 		uint16(term.ColorCyan),
@@ -114,11 +124,7 @@ func main() {
 		modeSb:         NewStatusBar(),
 		secondSb:       NewStatusBar(),
 		sessionBrowser: NewSelector("Recent sessions", "/home/test/sample", "/tmp/testing", "/var/aaaa", "/home/user/file1"),
-		editor: NewBrushPalleteEditor([][]rune{
-			{'¶', '»', 'º', '±', 'ß', '÷', 'Ħ'},
-			{'ł', 'Œ', 'Ŧ', 'Ʒ', 'ǥ', 'Γ', 'Σ'},
-			{'.', 'Ж', 'љ', 'ק', 'گ', '‰', '※'},
-		}),
+		editor:         NewBrushPalleteEditor(brushPalletes),
 	}
 
 	paintLayer := createPaintLayer(tpaint)
