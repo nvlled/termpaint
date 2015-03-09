@@ -20,12 +20,26 @@ func NewBrushPallete(brushes ...rune) *brushPallete {
 	}
 }
 
+func (bp *brushPallete) SetBrushes(brushes ...rune) {
+	bp.brushes = brushes
+	n := len(brushes) - 1
+	if bp.cursor > n {
+		bp.cursor = n
+	}
+}
+
 func (bp *brushPallete) Width() size.T {
 	return size.Const(len(bp.brushes) * 2)
 }
 
 func (bp *brushPallete) Height() size.T {
 	return size.Const(1)
+}
+
+func (bp *brushPallete) SetBrush(index int, ch rune) {
+	if index >= 0 && index < len(bp.brushes) {
+		bp.brushes[index] = ch
+	}
 }
 
 func (bp *brushPallete) Brush(index int) rune {
@@ -37,6 +51,7 @@ func (bp *brushPallete) Brush(index int) rune {
 
 func (bp *brushPallete) Render(canvas wind.Canvas) {
 	for x, brush := range bp.brushes {
+		canvas.Draw(x*2+1, 0, ' ', 0, 0) // clear blank spaces
 		canvas.Draw(x*2, 0, brush, 0, 0)
 	}
 	if bp.showCursor {
