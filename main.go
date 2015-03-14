@@ -52,7 +52,7 @@ type termPaint struct {
 }
 
 func createPaintLayer(tpaint *termPaint) wind.Layer {
-	hr := wind.Line('―')
+	//hr := wind.Line('―')
 	return wind.Vlayer(
 		wind.Hlayer(
 			wind.Defer(func() wind.Layer { return tpaint.bp }),
@@ -61,9 +61,9 @@ func createPaintLayer(tpaint *termPaint) wind.Layer {
 		),
 		//hr,
 		wind.Hlayer(tpaint.cp, wind.Text("| "), tpaint.secondSb),
-		hr,
+		//hr,
 		wind.Zlayer(
-			tpaint.dArea,
+			wind.Border('-', '.', tpaint.dArea),
 			// RenderLayer returns Free size, not the popupLayer size
 			wind.SyncSize(wind.Defer(getPopupLayer), wind.RenderLayer(
 				func(canvas wind.Canvas) {
@@ -79,7 +79,6 @@ func createPaintLayer(tpaint *termPaint) wind.Layer {
 
 func main() {
 	term.Init()
-	termw, termh := term.Size()
 
 	brushPalletes := [][]rune{
 		{'¶', '»', 'º', '±', 'ß', '÷', 'Ħ'},
@@ -113,7 +112,7 @@ func main() {
 		}
 		dArea.Flush()
 	} else {
-		dArea = NewDrawingArea(termw, termh)
+		dArea = NewDrawingArea(70, 20)
 	}
 
 	tpaint := &termPaint{
