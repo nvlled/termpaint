@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	term "github.com/nsf/termbox-go"
+	"github.com/nvlled/termpaint/tool"
 	"github.com/nvlled/wind"
 	"os"
 	"time"
@@ -22,22 +23,35 @@ import (
 
 var modified = true
 
+// note: redrawn() must be called prior to redrawn.Wait()
+// or else The Lock Of Teh Dead will come
+var redrawn = tool.NewEmitter()
+
 //var mode Mode = normalMode
 //func switchMode(m Mode) { mode = m }
 func redraw() { modified = true }
 
+func redrawAndWait() {
+	redraw()
+	redrawn.Wait()
+}
+
 var popupLayer wind.Layer
+var showPopup = false
 
 func getPopupLayer() wind.Layer { return popupLayer }
 
 func setPopupLayer(layer wind.Layer) {
+	showPopup = true
 	popupLayer = wind.Border('-', '|', layer)
 	redraw()
 }
 
 func hidePopupLayer() {
-	popupLayer = nil
-	redraw()
+	showPopup = false
+	redrawAndWait()
+	// The reason for waiting is to avoid
+	// erasing the layer behind the popup.
 }
 
 type termPaint struct {
@@ -67,9 +81,11 @@ func createPaintLayer(tpaint *termPaint) wind.Layer {
 			// RenderLayer returns Free size, not the popupLayer size
 			wind.SyncSize(wind.Defer(getPopupLayer), wind.RenderLayer(
 				func(canvas wind.Canvas) {
-					if popupLayer != nil {
-						canvas.Clear()
+					canvas.Clear()
+					if showPopup {
 						popupLayer.Render(canvas)
+					} else if popupLayer != nil {
+						popupLayer = nil
 					}
 				},
 			)),
@@ -135,6 +151,7 @@ func main() {
 			if modified {
 				paintLayer.Render(canvas)
 				term.Flush()
+				redrawn.Emit(true)
 				modified = false
 			}
 		}

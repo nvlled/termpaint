@@ -38,8 +38,9 @@ func (mode *normalMode) Handle(tpaint *termPaint, events chan term.Event) {
 		case term.KeyCtrlF:
 			setPopupLayer(tpaint.sessionBrowser)
 			tpaint.sessionBrowser.Select(events)
-			dArea.Flush()
 			hidePopupLayer()
+			dArea.Flush()
+			redraw()
 
 		case term.KeyCtrlE:
 			setPopupLayer(tpaint.editor)
@@ -47,9 +48,9 @@ func (mode *normalMode) Handle(tpaint *termPaint, events chan term.Event) {
 			if pallete != nil {
 				tpaint.bp = pallete
 			}
-
-			dArea.Flush()
 			hidePopupLayer()
+			dArea.Flush()
+			redraw()
 
 		case term.KeyCtrlS:
 			filename := tpaint.filename
