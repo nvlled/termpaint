@@ -113,6 +113,52 @@ func (mode *normalMode) Handle(tpaint *termPaint, events chan term.Event) {
 			tpaint.secondSb.SetText("")
 			mode.brush.Fg = term.Attribute(color)
 			mode.updateStatus(tpaint.modeSb)
+
+		case 'x':
+			brush := true
+			events_ := make(chan term.Event, 1)
+			selecting := true
+			cancel := false
+			savedBrush := *mode.brush
+			go func() {
+				for e := range events {
+					switch e.Key {
+					case term.KeyArrowUp:
+						brush = true
+						close(events_)
+						events_ = make(chan term.Event, 1)
+					case term.KeyArrowDown:
+						brush = false
+						close(events_)
+						events_ = make(chan term.Event, 1)
+					case term.KeyEsc:
+						cancel = true
+						fallthrough
+					case term.KeyEnter:
+						selecting = false
+						close(events_)
+						return
+					default:
+						events_ <- e
+					}
+				}
+			}()
+			color := tpaint.cp
+			pallete := tpaint.bp
+			for selecting {
+				if brush {
+					_, ch := pallete.ChooseBrush(events_)
+					mode.brush.Ch = ch
+				} else {
+					_, c := color.ChooseBrush(events_)
+					mode.brush.Fg = term.Attribute(c)
+				}
+				mode.updateStatus(tpaint.modeSb)
+			}
+			if cancel {
+				mode.brush = &savedBrush
+				mode.updateStatus(tpaint.modeSb)
+			}
 		}
 	}
 	redraw()
